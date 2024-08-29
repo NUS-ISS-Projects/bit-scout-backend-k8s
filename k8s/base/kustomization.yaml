@@ -1,0 +1,11 @@
+resources:
+  - ingress.yaml
+  - storage-class.yaml
+  - kafka-statefulset.yaml
+  - kafka-service.yaml
+  - zookeeper-statefulset.yaml
+  - zookeeper-service.yaml
+  - watchlist-deployment.yaml
+  - watchlist-service.yaml
+  - notification-deployment.yaml
+  - notification-service.yaml

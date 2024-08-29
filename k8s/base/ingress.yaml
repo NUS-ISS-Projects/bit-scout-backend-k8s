@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crypto-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/load-balance: "round_robin"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "1200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "1200"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/websocket-services: "notification-service"
+spec:
+  rules:
+  - host: crypto.local
+    http:
+      paths:
+      - path: /api/watchlist/
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: watchlist-service
+            port:
+              number: 80
+      - path: /api/v1/notifications/
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: notification-service
+            port:
+              number: 80
+      - path: /notifications  # Specific path for WebSocket connections
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: notification-service
+            port:
+              number: 80
