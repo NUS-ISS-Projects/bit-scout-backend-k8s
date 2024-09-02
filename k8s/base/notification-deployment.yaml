@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: notification-service
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: notification-service
@@ -15,7 +15,7 @@ spec:
       containers:
       - name: notification-service
         image: my-notification-service:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Never  # TODO: To be removed, should pull the image from cloud instead of local
         ports:
         - containerPort: 8888
         readinessProbe:

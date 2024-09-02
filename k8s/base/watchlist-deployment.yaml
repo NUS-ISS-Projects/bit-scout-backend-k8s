@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: watchlist-service
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: watchlist-service
@@ -15,7 +15,7 @@ spec:
       containers:
       - name: watchlist-service
         image: my-watchlist-service:latest
-        imagePullPolicy: Never
+        imagePullPolicy: Never  # TODO: To be removed, should pull the image from cloud instead of local
         ports:
         - containerPort: 8888
         readinessProbe:
