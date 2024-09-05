@@ -12,10 +12,12 @@ spec:
       labels:
         app: watchlist-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
       - name: watchlist-service
-        image: my-watchlist-service:latest
-        imagePullPolicy: Never  # TODO: To be removed, should pull the image from cloud instead of local
+        image: ghcr.io/nus-iss-projects/bit-scout-backend-watchlist/bit-scout-backend-watchlist:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8888
         readinessProbe:
