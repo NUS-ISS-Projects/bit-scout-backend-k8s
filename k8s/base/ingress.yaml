@@ -3,11 +3,8 @@ kind: Ingress
 metadata:
   name: crypto-ingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: "crypto-ingress-ip"  # This refers to static IP, reserve it first via GCP console
-    # ingressClassName: gce
-    spec.ingressClassName: "gce"
-
 spec:
+  ingressClassName: "gce"
   rules:
     - http:
         paths:
@@ -30,5 +27,12 @@ spec:
           backend:
             service:
               name: notification-service
+              port:
+                number: 80
+        - path: /account/
+          pathType: Prefix
+          backend:
+            service:
+              name: user-service
               port:
                 number: 80

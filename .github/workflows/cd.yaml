@@ -1,0 +1,94 @@
+name: Deploy to GKE
+
+on:
+  push:
+    tags:
+      - '*-release'
+      - '*-staging'
+
+env:
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+  GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+  GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+  GOOGLE_SERVICES_NOTIFICATION: ${{ secrets.GOOGLE_SERVICES_NOTIFICATION }}
+  GOOGLE_SERVICES_USER: ${{ secrets.GOOGLE_SERVICES_USER }}
+  GOOGLE_SERVICES_WATCHLIST: ${{ secrets.GOOGLE_SERVICES_WATCHLIST }}
+  GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+
+jobs:
+  deploy-to-gke:
+    name: Deploy to GKE
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout code
+      - uses: actions/checkout@v2
+
+      # Step 2: Authenticate to GCP using GKE credentials
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ env.GCLOUD_AUTH }}'
+
+      # Step 3: Set up Cloud SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # Step 4: Get GKE credentials
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }} --project ${{ env.PROJECT_ID }}
+
+      # Step 5: Create the GHCR Docker config file for use with secretGenerator
+      - name: Create GHCR Docker config
+        run: |
+          echo '{"auths":{"ghcr.io":{"auth":"'"$(echo -n "${{ env.GHCR_USERNAME }}:${{ env.GHCR_TOKEN }}" | base64)"'"}}}' > k8s/base/.dockerconfigjson
+
+      # Step 6: Decode and inject google-services.json for notification-service
+      - name: Decode google-services.json for notification-service
+        run: |
+          echo "${{ env.GOOGLE_SERVICES_NOTIFICATION }}" | base64 --decode > k8s/base/google-services-notification.json
+
+      # Step 7: Decode and inject google-services.json for user-service
+      - name: Decode google-services.json for user-service
+        run: |
+          echo "${{ env.GOOGLE_SERVICES_USER }}" | base64 --decode > k8s/base/google-services-user.json
+
+      # Step 8: Decode and inject google-services.json for watchlist-service
+      - name: Decode google-services.json for watchlist-service
+        run: |
+          echo "${{ env.GOOGLE_SERVICES_WATCHLIST }}" | base64 --decode > k8s/base/google-services-watchlist.json
+
+      # Step 9: Install Kustomize
+      - name: Install Kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
+      # Step 10: Apply Kustomize for production
+      - name: Apply Kubernetes Manifests for production
+        if: contains(github.ref, '-release')
+        run: |
+          kustomize build ./k8s/overlays/prod | kubectl apply -f -
+
+      # Step 11: Apply Kustomize for staging
+      - name: Apply Kubernetes Manifests for staging
+        if: contains(github.ref, '-staging')
+        run: |
+          kustomize build ./k8s/overlays/staging | kubectl apply -f -
+
+      # Step 12: Check the deployment status for all services
+      - name: Check Rollout Status
+        run: |
+          kubectl rollout status deployment/notification-service --timeout=10m
+          kubectl rollout status deployment/user-service --timeout=10m
+          kubectl rollout status deployment/watchlist-service --timeout=10m
+
+      # Step 13: Rollback deployment if any service fails
+      - name: Rollback All Services if Unsuccessful
+        if: failure()
+        run: |
+          kubectl rollout undo deployment/notification-service
+          kubectl rollout undo deployment/user-service
+          kubectl rollout undo deployment/watchlist-service

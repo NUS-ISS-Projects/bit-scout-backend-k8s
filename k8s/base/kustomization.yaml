@@ -9,3 +9,27 @@ resources:
   - watchlist-service.yaml
   - notification-deployment.yaml
   - notification-service.yaml
+  - user-deployment.yaml
+  - user-service.yaml
+
+secretGenerator:
+  # GHCR Docker Registry secret
+  - name: ghcr-secret
+    files:
+      - .dockerconfigjson  # File generated dynamically in the GitHub Actions workflow
+    type: kubernetes.io/dockerconfigjson
+
+  # Firebase config for notification-service
+  - name: firebase-config-notification
+    files:
+      - google-services-notification.json
+
+  # Firebase config for user-service
+  - name: firebase-config-user
+    files:
+      - google-services-user.json
+
+  # Firebase config for watchlist-service
+  - name: firebase-config-watchlist
+    files:
+      - google-services-watchlist.json
