@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Variables
-PROJECT_ID="your-gcp-project-id"
+PROJECT_ID="modified-badge-241302"
 CLUSTER_NAME="crypto-cluster"
-ZONE="asia-southeast1-c"
+ZONE="us-central1"
 NAMESPACE="default"
-STATIC_IP_NAME="crypto-ingress-ip"
+STATIC_IP_NAME="crypto-ingress-ip"  # If you want to use a static IP for Ingress, extra charges apply
 K8S_MANIFEST_PATH="k8s/overlays/prod"
 SA_KEY_PATH="/path/to/your/service-account-key.json"
 
