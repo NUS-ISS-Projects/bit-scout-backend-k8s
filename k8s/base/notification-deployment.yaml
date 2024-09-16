@@ -36,7 +36,7 @@ spec:
         volumeMounts:
         - name: google-services-volume
           mountPath: /app/app/google-services.json
-          subPath: google-services.json  # Mounts google-services.json
+          subPath: google-services-notification.json  # Mounts google-services.json
         readinessProbe:
           httpGet:
             path: /api/v1/notifications/health

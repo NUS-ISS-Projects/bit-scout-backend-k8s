@@ -19,10 +19,10 @@ spec:
         app: watchlist-service
     spec:
       imagePullSecrets:
-        - name: ghcr-secret  # Docker Registry secret
+        - name: ghcr-secret
       containers:
       - name: watchlist-service
-        image: ghcr.io/nus-iss-projects/bit-scout-backend-watchlist:latest
+        image: ghcr.io/nus-iss-projects/bit-scout-backend-watchlist/bit-scout-backend-watchlist:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8888
@@ -36,7 +36,7 @@ spec:
         volumeMounts:
         - name: google-services-volume
           mountPath: /app/app/google-services.json
-          subPath: google-services.json  # Mounts google-services.json
+          subPath: google-services-watchlist.json  # Mounts google-services.json
         readinessProbe:
           httpGet:
             path: /api/watchlist/health

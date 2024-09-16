@@ -33,3 +33,6 @@ secretGenerator:
   - name: firebase-config-watchlist
     files:
       - google-services-watchlist.json
+
+generatorOptions:
+  disableNameSuffixHash: true
