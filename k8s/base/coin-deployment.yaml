@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coin-service
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  revisionHistoryLimit: 5  # Retain 5 revisions for rollback
+  selector:
+    matchLabels:
+      app: coin-service
+  template:
+    metadata:
+      labels:
+        app: coin-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+      - name: coin-service
+        image: ghcr.io/nus-iss-projects/bit-scout-kafka-consume/bit-scout-backend-coin:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+        readinessProbe:
+          httpGet:
+            path: /api/v1/coin/health
+            port: 8080
+          initialDelaySeconds: 150
+          periodSeconds: 30
+          failureThreshold: 20  # Number of failures before restarting the container
+        livenessProbe:
+          httpGet:
+            path: /api/v1/coin/health
+            port: 8080
+          initialDelaySeconds: 150
+          periodSeconds: 30
+          failureThreshold: 20  # Number of failures before restarting the container

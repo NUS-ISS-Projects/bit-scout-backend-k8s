@@ -36,3 +36,17 @@ spec:
               name: user-service
               port:
                 number: 80
+        - path: /api/v1/coin/
+          pathType: Prefix
+          backend:
+            service:
+              name: coin-service
+              port:
+                number: 80
+        - path: /coin  # Specific path for WebSocket connections
+          pathType: Prefix
+          backend:
+            service:
+              name: coin-service
+              port:
+                number: 80

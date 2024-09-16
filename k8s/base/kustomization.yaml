@@ -11,6 +11,8 @@ resources:
   - notification-service.yaml
   - user-deployment.yaml
   - user-service.yaml
+  - coin-deployment.yaml
+  - coin-service.yaml
 
 secretGenerator:
   # GHCR Docker Registry secret
