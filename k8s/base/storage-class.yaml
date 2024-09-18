@@ -2,5 +2,6 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: fast
-provisioner: kubernetes.io/gce-pd  # Adjust based on your environment
+# provisioner: kubernetes.io/gce-pd  # Adjust based on your environment
+provisioner: kubernetes.io/no-provisioner  # For Minikube, adjust this to use a local path provisioner
 reclaimPolicy: Retain

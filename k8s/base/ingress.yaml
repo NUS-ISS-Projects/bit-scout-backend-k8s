@@ -4,7 +4,7 @@ metadata:
   name: crypto-ingress
   annotations:
 spec:
-  ingressClassName: "gce"
+  ingressClassName: nginx
   rules:
     - http:
         paths:
