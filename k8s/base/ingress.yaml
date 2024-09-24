@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: crypto-ingress
   annotations:
+    kubernetes.io/ingress.global-static-ip-name: "crypto-ingress-ip"
 spec:
   ingressClassName: "gce"
   rules:

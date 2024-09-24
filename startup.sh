@@ -29,6 +29,7 @@ gcloud container clusters create-auto $CLUSTER_NAME \
 gcloud container clusters get-credentials $CLUSTER_NAME --region $ZONE
 
 # Reserve a Static IP for Ingress
+# gcloud compute addresses create crypto-ingress-ip --global
 gcloud compute addresses create $STATIC_IP_NAME \
     --global
 
