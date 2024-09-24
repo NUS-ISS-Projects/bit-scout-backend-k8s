@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "crypto-ingress-ip"
     spec.ingressClassName: "gce"
 spec:
-  ingressClassName: "gce"
+  # ingressClassName: "gce"
   rules:
     - http:
         paths:
