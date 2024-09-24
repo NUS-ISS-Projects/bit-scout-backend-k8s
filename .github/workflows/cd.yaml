@@ -84,6 +84,7 @@ jobs:
           kubectl rollout status deployment/notification-service --timeout=10m
           kubectl rollout status deployment/user-service --timeout=10m
           kubectl rollout status deployment/watchlist-service --timeout=10m
+          kubectl rollout status deployment/coin-service --timeout=10m
 
       # Step 13: Rollback deployment if any service fails
       - name: Rollback All Services if Unsuccessful
@@ -92,3 +93,12 @@ jobs:
           kubectl rollout undo deployment/notification-service
           kubectl rollout undo deployment/user-service
           kubectl rollout undo deployment/watchlist-service
+          kubectl rollout undo deployment/coin-service
+      
+      # Step 14: Clean up
+      - name: Clean up
+        run: |
+          rm k8s/base/.dockerconfigjson
+          rm k8s/base/google-services-notification.json
+          rm k8s/base/google-services-user.json
+          rm k8s/base/google-services-watchlist.json
