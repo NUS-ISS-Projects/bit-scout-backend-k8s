@@ -13,6 +13,9 @@ resources:
   - user-service.yaml
   - coin-deployment.yaml
   - coin-service.yaml
+  - redis-statefulset.yaml
+  - redis-service.yaml
+  - redis-pv.yaml
 
 secretGenerator:
   # GHCR Docker Registry secret

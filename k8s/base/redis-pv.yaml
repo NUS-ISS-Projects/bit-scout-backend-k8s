@@ -1,0 +1,15 @@
+# This file only for testing on Minikube, remove this file if when using a cloud provider like GCP
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: fast
+  hostPath:
+    path: "/mnt/data/redis"  # This is the path on your Minikube node
