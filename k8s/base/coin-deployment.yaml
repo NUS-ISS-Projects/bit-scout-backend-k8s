@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-service
+  name: coin-service
 spec:
   replicas: 1
   strategy:
@@ -12,20 +12,20 @@ spec:
   revisionHistoryLimit: 5  # Retain 5 revisions for rollback
   selector:
     matchLabels:
-      app: notification-service
+      app: coin-service
   template:
     metadata:
       labels:
-        app: notification-service
+        app: coin-service
     spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-      - name: notification-service
-        image: ghcr.io/nus-iss-projects/bit-scout-backend-notification/bit-scout-backend-notification:latest
+      - name: coin-service
+        image: ghcr.io/nus-iss-projects/bit-scout-kafka-consume/bit-scout-backend-coin:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8888
+        - containerPort: 8080
         resources:
           limits:
             cpu: "500m"
@@ -33,25 +33,17 @@ spec:
           requests:
             cpu: "100m"
             memory: "256Mi"
-        volumeMounts:
-        - name: google-services-volume
-          mountPath: /app/app/google-services.json
-          subPath: google-services-notification.json  # Mounts google-services.json
         readinessProbe:
           httpGet:
-            path: /api/v1/notifications/health
-            port: 8888
+            path: /api/v1/coin/health
+            port: 8080
           initialDelaySeconds: 150
           periodSeconds: 30
           failureThreshold: 20  # Number of failures before restarting the container
         livenessProbe:
           httpGet:
-            path: /api/v1/notifications/health
-            port: 8888
+            path: /api/v1/coin/health
+            port: 8080
           initialDelaySeconds: 150
           periodSeconds: 30
           failureThreshold: 20  # Number of failures before restarting the container
-      volumes:
-      - name: google-services-volume
-        secret:
-          secretName: firebase-config-notification  # Firebase credentials secret

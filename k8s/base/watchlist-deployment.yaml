@@ -3,7 +3,13 @@ kind: Deployment
 metadata:
   name: watchlist-service
 spec:
-  replicas: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  revisionHistoryLimit: 5  # Retain 5 revisions for rollback
   selector:
     matchLabels:
       app: watchlist-service
@@ -12,23 +18,40 @@ spec:
       labels:
         app: watchlist-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
       - name: watchlist-service
-        image: my-watchlist-service:latest
-        imagePullPolicy: Never  # TODO: To be removed, should pull the image from cloud instead of local
+        image: ghcr.io/nus-iss-projects/bit-scout-backend-watchlist/bit-scout-backend-watchlist:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8888
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+        volumeMounts:
+        - name: google-services-volume
+          mountPath: /app/app/google-services.json
+          subPath: google-services-watchlist.json  # Mounts google-services.json
         readinessProbe:
           httpGet:
             path: /api/watchlist/health
             port: 8888
           initialDelaySeconds: 150
           periodSeconds: 30
-          failureThreshold: 10  # Number of failures before restarting the container
+          failureThreshold: 20
         livenessProbe:
           httpGet:
             path: /api/watchlist/health
             port: 8888
           initialDelaySeconds: 150
           periodSeconds: 30
-          failureThreshold: 10  # Number of failures before restarting the container
+          failureThreshold: 20
+      volumes:
+      - name: google-services-volume
+        secret:
+          secretName: firebase-config-watchlist  # Firebase credentials secret
