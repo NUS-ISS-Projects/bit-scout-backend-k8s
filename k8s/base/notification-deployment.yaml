@@ -4,6 +4,12 @@ metadata:
   name: notification-service
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  revisionHistoryLimit: 5  # Retain 5 revisions for rollback
   selector:
     matchLabels:
       app: notification-service
@@ -12,12 +18,25 @@ spec:
       labels:
         app: notification-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
       - name: notification-service
-        image: my-notification-service:latest
-        imagePullPolicy: Never  # TODO: To be removed, should pull the image from cloud instead of local
+        image: ghcr.io/nus-iss-projects/bit-scout-backend-notification/bit-scout-backend-notification:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8888
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+        volumeMounts:
+        - name: google-services-volume
+          mountPath: /app/app/google-services.json
+          subPath: google-services-notification.json  # Mounts google-services.json
         readinessProbe:
           httpGet:
             path: /api/v1/notifications/health
@@ -32,3 +51,7 @@ spec:
           initialDelaySeconds: 150
           periodSeconds: 30
           failureThreshold: 20  # Number of failures before restarting the container
+      volumes:
+      - name: google-services-volume
+        secret:
+          secretName: firebase-config-notification  # Firebase credentials secret

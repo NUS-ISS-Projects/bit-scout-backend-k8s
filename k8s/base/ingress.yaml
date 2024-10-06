@@ -3,36 +3,52 @@ kind: Ingress
 metadata:
   name: crypto-ingress
   annotations:
-    nginx.ingress.kubernetes.io/load-balance: "round_robin"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "1200"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "1200"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "1200"
-    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/websocket-services: "notification-service"
+    kubernetes.io/ingress.global-static-ip-name: "crypto-ingress-ip"
+    spec.ingressClassName: "gce"
 spec:
+  # ingressClassName: "gce"
   rules:
-  - host: crypto.local
-    http:
-      paths:
-      - path: /api/watchlist/
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: watchlist-service
-            port:
-              number: 80
-      - path: /api/v1/notifications/
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: notification-service
-            port:
-              number: 80
-      - path: /notifications  # Specific path for WebSocket connections
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: notification-service
-            port:
-              number: 80
+    - http:
+        paths:
+        - path: /api/watchlist/
+          pathType: Prefix
+          backend:
+            service:
+              name: watchlist-service
+              port:
+                number: 80
+        - path: /api/v1/notifications/
+          pathType: Prefix
+          backend:
+            service:
+              name: notification-service
+              port:
+                number: 80
+        - path: /notifications  # Specific path for WebSocket connections
+          pathType: Prefix
+          backend:
+            service:
+              name: notification-service
+              port:
+                number: 80
+        - path: /account/
+          pathType: Prefix
+          backend:
+            service:
+              name: user-service
+              port:
+                number: 80
+        - path: /api/v1/coin/
+          pathType: Prefix
+          backend:
+            service:
+              name: coin-service
+              port:
+                number: 80
+        - path: /coin  # Specific path for WebSocket connections
+          pathType: Prefix
+          backend:
+            service:
+              name: coin-service
+              port:
+                number: 80

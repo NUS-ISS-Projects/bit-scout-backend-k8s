@@ -4,7 +4,7 @@ metadata:
   name: zookeeper
 spec:
   serviceName: zookeeper
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: zookeeper
@@ -26,6 +26,13 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
   volumeClaimTemplates:
   - metadata:
       name: data

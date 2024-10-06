@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: watchlist-service
+  name: user-service
 spec:
   replicas: 3
   strategy:
@@ -12,20 +12,20 @@ spec:
   revisionHistoryLimit: 5  # Retain 5 revisions for rollback
   selector:
     matchLabels:
-      app: watchlist-service
+      app: user-service
   template:
     metadata:
       labels:
-        app: watchlist-service
+        app: user-service
     spec:
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-      - name: watchlist-service
-        image: ghcr.io/nus-iss-projects/bit-scout-backend-watchlist/bit-scout-backend-watchlist:latest
+      - name: user-service
+        image: ghcr.io/nus-iss-projects/bit-scout-user-service/bit-scout-user-service:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8888
+        - containerPort: 8081
         resources:
           limits:
             cpu: "500m"
@@ -36,22 +36,22 @@ spec:
         volumeMounts:
         - name: google-services-volume
           mountPath: /app/app/google-services.json
-          subPath: google-services-watchlist.json  # Mounts google-services.json
+          subPath: google-services-user.json  # Mounts google-services.json
         readinessProbe:
           httpGet:
-            path: /api/watchlist/health
-            port: 8888
+            path: /account/health
+            port: 8081
           initialDelaySeconds: 150
           periodSeconds: 30
-          failureThreshold: 20
+          failureThreshold: 20  # Number of failures before restarting the container
         livenessProbe:
           httpGet:
-            path: /api/watchlist/health
-            port: 8888
+            path: /account/health
+            port: 8081
           initialDelaySeconds: 150
           periodSeconds: 30
-          failureThreshold: 20
+          failureThreshold: 20  # Number of failures before restarting the container
       volumes:
       - name: google-services-volume
         secret:
-          secretName: firebase-config-watchlist  # Firebase credentials secret
+          secretName: firebase-config-user  # Firebase credentials secret
