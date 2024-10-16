@@ -7,13 +7,16 @@ resources:
   - zookeeper-service.yaml
   - watchlist-deployment.yaml
   - watchlist-service.yaml
+  - watchlist-hpa.yaml
   - notification-deployment.yaml
   - notification-service.yaml
   - notification-hpa.yaml
   - user-deployment.yaml
   - user-service.yaml
+  - user-hpa.yaml
   - coin-deployment.yaml
   - coin-service.yaml
+  - coin-hpa.yaml
   - redis-statefulset.yaml
   - redis-service.yaml
   
