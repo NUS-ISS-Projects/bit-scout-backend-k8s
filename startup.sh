@@ -3,7 +3,7 @@
 # Variables
 PROJECT_ID="modified-badge-241302"
 CLUSTER_NAME="crypto-cluster"
-ZONE="us-central1"
+ZONE="asia-southeast1"
 NAMESPACE="default"
 STATIC_IP_NAME="crypto-ingress-ip"  # If you want to use a static IP for Ingress, extra charges apply
 K8S_MANIFEST_PATH="k8s/overlays/prod"
