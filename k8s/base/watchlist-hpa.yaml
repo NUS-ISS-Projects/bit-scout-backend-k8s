@@ -15,4 +15,4 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 10 # For demonstration purposes, set to 10% CPU utilization, ideally should be higher
+        averageUtilization: 80
