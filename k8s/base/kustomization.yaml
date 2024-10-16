@@ -9,6 +9,7 @@ resources:
   - watchlist-service.yaml
   - notification-deployment.yaml
   - notification-service.yaml
+  - notification-hpa.yaml
   - user-deployment.yaml
   - user-service.yaml
   - coin-deployment.yaml
